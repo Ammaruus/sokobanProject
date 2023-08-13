@@ -1,4 +1,4 @@
-#include "text.hpp"
+#include "text.h"
 
 
 void Text::draw() {
