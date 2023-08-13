@@ -82,13 +82,7 @@ void Board::playerBoxmove(Point newppos, Point vecteur){
 
 bool Board::isValidBoxmove(Point newppos, Point vecteur){
   Point boxDest = {newppos.x + vecteur.x, newppos.y + vecteur.y};
- // cout <<"player pos" << playerCell->getPosition().x << ' ' <<playerCell->getPosition().y << endl; 
-  //cout<< "box dest : " << boxDest.x << " , " << boxDest.y << endl;;
-  //bool q1 = isInBoard(boxDest);
-  //bool q2 = cells[boxDest.x][boxDest.y].getType() == PATH;
-  //int typee= cells[boxDest.x][boxDest.y].getType();
-  
-  //cout << "in board: " << q1 << "valide : " << typee << endl;
+
   return  areNeighbors(&cells[newppos.x][newppos.y],&cells[boxDest.x][boxDest.y])
    && cells[boxDest.x][boxDest.y].getType() != WALL; //TODO répétition de code avec playermove
 } 
@@ -98,6 +92,8 @@ void Board::initialize() {
   // reset whenver spacebar is called. (prof)
 
   // Until the last step when we needed to reset, this would be the constructor
+
+  steps = 0;
 
   displayintro();
   cells.clear(); // Needed to remove the cells if we are starting again
@@ -141,23 +137,36 @@ void Board::initialize() {
   cout << "done !" << endl;
 }
 
+
+bool Board::isStepsLimitPassed() const{
+    return (steps>=stepsLimit);
+}
+
 void Board::draw() { //TODO peut etre mettre displayboard dedans <<<
   counter += 1;
-  if (counter < 80) {
+  if (counter < 100) {
     intro.draw();
   }
   else {
       if (isGameOver()) {
       textYouWin.draw();
+    } else if (isStepsLimitPassed()) {
+      textYouLose.draw();
     }
     else{
       for (auto &v : cells)
       for (auto &c : v) {
         c.draw();
       }
+   }
+      Text textSteps{"Nombre de pas :" + to_string(steps), {100, 200}, 20, FL_GRAY0};
+      Text textHighScore{"Meilleur score :" + to_string(gamesHighScore), {100, 220}, 20, FL_GRAY0};
+      Text textStepsLimit{"Limite de pas :" + to_string(stepsLimit), {100, 240}, 20, FL_GRAY0};
+      textHighScore.draw();
+      textSteps.draw();
+      textStepsLimit.draw();
     }
   }
-}
 
 
 
@@ -192,19 +201,19 @@ void Board::keyPressed(
   case ' ':
     initialize();
     break;
-  case 'q':
+  case 'q': // sortir du jeux
     exit(0);
     break;
-  case 'o':
+  case FL_Up:
     move({0, -1});
     break;
-  case 'l':
-    move({0, 1}); //! PROBLEME: up and down are be inverted (j'ai inversé les 2 vecteurs pr l'instant)
+  case FL_Down:
+    move({0, 1}); 
     break;
-  case 'k':
+  case FL_Left:
     move({-1, 0});
     break;
-  case 'm':
+  case FL_Right:
     move({1, 0});
     break;
   default: {
@@ -226,6 +235,7 @@ void Board::playermove(Point newppos) { //! param = nouvelle position (plus un v
 
   cout << "old : " << playerCellPos.x << ' ' << playerCellPos.y << endl;
   cout << "new : " << newppos.x << ' ' << newppos.y << endl;
+  steps++;
   updateCellNeighbors(playerCell); //TODO regulièrement check if it's updating the right cell
   
   playerCell = &cells[newppos.x][newppos.y]; //TODO plus propre d'en faire une méthode setter
@@ -276,5 +286,44 @@ void Board::updateCellNeighbors(Cell* cell){
             neighbors); // TODO semi-question : ordre affichage cell (might not
                         //TODO                                            matter)
       }
-
 }
+
+void Board::initHighscore() {
+  ifstream highScoreFile("highscore.txt");
+  if (!highScoreFile) {
+    cout << "Unable to open file" << endl;
+    exit(1);
+  } else {
+    highScoreFile.seekg(0, highScoreFile.end);
+    int length = highScoreFile.tellg(); // test: put initHighscore.tellg in char
+    char *buffer = new char[length];
+    highScoreFile.seekg(0, highScoreFile.beg);
+    highScoreFile.read(buffer, length);
+    sscanf(buffer, "%d", &gamesHighScore);
+    cout << "high score is " << gamesHighScore << endl;
+  }
+  highScoreFile.close();
+}
+
+void Board::resetHighscore() {
+  ofstream highscoreFile("highscore.txt", ofstream::out | ofstream::trunc);
+  if (!highscoreFile) {
+    cout << "Unable to open file" << endl;
+    exit(1);
+  } else {
+    highscoreFile << 0 << endl;
+      gamesHighScore = 0;
+    cout << "highscore was reset" << gamesHighScore << endl;
+  }
+  highscoreFile.close();
+}
+
+void Board::setHighscore(unsigned int newHighscore) {
+  if (gamesHighScore == 0 || gamesHighScore > newHighscore) {
+    ofstream highscoreFile("highscore.txt", ofstream::out | ofstream::trunc);// replace whats in the file by erasing the existing score
+    highscoreFile << newHighscore << endl;
+      gamesHighScore = newHighscore;
+    cout << "newhighscore!!!" << newHighscore << endl;
+  }
+}
+

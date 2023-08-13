@@ -27,14 +27,16 @@ elsewhere it will probably crash.
 class Board {
 
   vector<vector<Cell>> cells;
-  vector<Cell *> neighbors(int x, int y); //? ?????
-  Text textYouWin{"YOU WIN", {190, 150}, 90, fl_rgb_color(255,153,204)};
-  Text intro {"SOKOBAN", {150, 150}, 50, fl_rgb_color(255,153,204)}; //! ne fonctionne pas
+  vector<Cell *> neighbors(int x, int y); 
+  Text textYouWin{"Gagné", {190, 150}, 90, fl_rgb_color(0, 255, 0)};
+  Text textYouLose{"Perdu", {190, 150}, 90, fl_rgb_color(255, 0, 0)};
+  Text intro {"Sokoban, created by Amine et Ammar", {210, 150}, 20, fl_rgb_color(0,0,0)}; 
   unsigned int counter = 0;
+  unsigned int gamesHighScore = 0;
+  unsigned int steps = 0;
+  unsigned int stepsLimit = 10;
 
   Cell* playerCell;
-   
-  //! 2 pointeurs vers un même objet = dangereux ? (probablement pas car mem statique)
 
   void initialize();
 
@@ -61,7 +63,13 @@ public:
 
   bool isGameOver(); 
   bool isValidBoxmove(Point newppos, Point vecteur);
-  void playerBoxmove(Point newppos, Point vecteur); //TODO params non nécessaires (voir code flow of move())
+  void playerBoxmove(Point newppos, Point vecteur);
+
+  void initHighscore();
+  void resetHighscore();
+  void setHighscore(unsigned int newHighscore);
+  
+  bool isStepsLimitPassed() const;
 };
 
 #endif //__BOARD_H

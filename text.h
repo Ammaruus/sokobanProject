@@ -16,7 +16,7 @@ class Text {
 
 public:
   // Constructor
-  Text(string s, Point center, int fontSize = 10, Fl_Color color = FL_BLACK)
+  Text(string s, Point center, int fontSize = 5, Fl_Color color = FL_BLACK)
       : s{s}, center{center}, fontSize{fontSize}, color{color} {}
 
   // Draw

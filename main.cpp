@@ -4,7 +4,6 @@
 #include <FL/fl_draw.H>
 #include <algorithm>
 #include <array>
-#include <bits/stdc++.h> //might be deleted
 #include <chrono>
 #include <iostream>
 #include <math.h>
@@ -12,26 +11,6 @@
 #include <string>
 #include <time.h>
 #include <vector>
-
-#include "scratch3.cpp"
-
-using namespace std;
-
-#include <FL/Fl.H>
-#include <FL/Fl_Box.H>
-#include <FL/Fl_Double_Window.H>
-#include <FL/fl_draw.H>
-#include <algorithm>
-#include <array>
-#include <bits/stdc++.h> //might be deleted
-#include <chrono>
-#include <iostream>
-#include <math.h>
-#include <random>
-#include <string>
-#include <time.h>
-#include <vector>
-
 
 #include "Board.h"
 
@@ -50,10 +29,9 @@ Do not edit!!!!
 class MainWindow : public Fl_Window {
   Board board;
   
-
 public:
 
-  MainWindow() : Fl_Window(500, 500, windowWidth, windowHeight, "Lab 3") {
+  MainWindow() : Fl_Window(500, 500, windowWidth, windowHeight, "Sokoban") {
     Fl::add_timeout(1.0 / refreshPerSecond, Timer_CB, this);
     resizable(this);
   }
