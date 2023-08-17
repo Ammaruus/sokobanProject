@@ -18,6 +18,17 @@ class Rectangle {
   int w, h;
   Fl_Color fillColor, frameColor;
 
+   vector<Point> stripeInitPos {{center.x-w/2, center.y - h /2 + 2},
+                              {center.x-w/2, center.y - h /4},
+                              {center.x-w/2, center.y},
+                              {center.x-w/2, center.y + h /4},
+                              {center.x-w/2, center.y + h/2 - 2}};
+  vector<Point> stripeFinalPos {{center.x+w/2, center.y - h /2 + 2},
+                              {center.x+w/2, center.y - h /4},
+                              {center.x+w/2, center.y},
+                              {center.x+w/2, center.y + h /4},
+                              {center.x+w/2, center.y + h /2 - 2}};
+
 public:
   Rectangle(Point center, int w, int h, Fl_Color frameColor = FL_BLACK,
             Fl_Color fillColor = FL_WHITE);
@@ -32,4 +43,5 @@ public:
   int getHeight() { return h; }
   bool contains(Point p);
   Point getCenter() { return center; }
+  void drawstripes();
 };

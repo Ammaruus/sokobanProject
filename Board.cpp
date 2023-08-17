@@ -18,11 +18,41 @@
 
 using namespace std;
 
-vector<vector<int>> board{
-    {1, 0, 0, 1}, 
-    {1, 0, 2, 0}, 
-    {1, 3, 0, 0},
-    {1, 1, 1, 4}};
+std::vector<std::vector<int>> initializeMatrixFromFile(const std::string &filename) {
+    std::ifstream inputFile(filename);
+
+    if (!inputFile.is_open()) {
+        std::cerr << "Could not open file: " << filename << std::endl;
+        return {};
+    }
+
+    std::vector<std::vector<int>> matrix;
+    std::string line;
+
+    while (std::getline(inputFile, line)) {
+        std::vector<int> row;
+        std::istringstream iss(line);
+        int value;
+
+        while (iss >> value) {
+            row.push_back(value);
+        }
+
+        matrix.push_back(row);
+    }
+
+    return matrix;
+}
+
+  // vector<vector<int>> board = {
+  //   {0, 5, 0, 1}, 
+  //   {0, 0, 2, 0}, 
+  //   {0, 3, 0, 0},
+  //   {0, 0, 4, 5}};
+
+  vector<vector<int>> board = initializeMatrixFromFile("map1.txt");
+
+
 
 void Board::displayintro(){
   
@@ -35,31 +65,13 @@ bool Board::isGameOver(){
         return false;
       }
     }
+  setHighscore(steps);
   return true;
 }
 
 bool Board::isvalidplayermove(Point destination){
     return cells[destination.x][destination.y].getType() != WALL && cells[destination.x][destination.y].getType() != BOX;
 } 
-
-void Board::move(Point vecteur){
-  Point playerCellPos = playerCell->getPosition();
-  Point newppos = {playerCellPos.x + vecteur.x, playerCellPos.y + vecteur.y};
-  if(isInBoard(newppos)) {
-    if (areNeighbors(playerCell,&cells[newppos.x][newppos.y])) {
-      if(isvalidplayermove(newppos)) { //TODO en faire une méthode (+ clair)
-        playermove(newppos);
-      }
-      else if (cells[newppos.x][newppos.y].getType() == BOX) {
-        cout <<"box pos before move:" << newppos.x << ' ' << newppos.y << endl;
-        if (isValidBoxmove(newppos,vecteur)) { //TODO transformer param vecteur en position
-        cout <<"valide !" << endl;
-            playerBoxmove(newppos,vecteur); //TODO same here
-            }
-       }
-    }
-  }
-}
 
 
 //! are_Neighbors remplace is_in_board pour le cas de boxmove et playermove ! 
@@ -74,11 +86,62 @@ bool Board::areNeighbors(Cell* c1, Cell* c2){ //vérifie si c2 est dans la liste
   return false;
 }
 
+void Board::move(Point vecteur){
+  Point playerCellPos = playerCell->getPosition();
+  Point newppos = {playerCellPos.x + vecteur.x, playerCellPos.y + vecteur.y};
+  if(isInBoard(newppos)) {
+    if (areNeighbors(playerCell,&cells[newppos.x][newppos.y])) {
+      if(isvalidplayermove(newppos)) {
+        playermove(newppos);
+      }else {  if (cells[newppos.x][newppos.y].isPortal() && cells[newppos.x][newppos.y].getType() != BOX) {
+             PortalTravel(newppos);
+            cout << "Traveeel" << endl;
+      } else if (cells[newppos.x][newppos.y].getType() == BOX) {
+        cout <<"box pos before move:" << newppos.x << ' ' << newppos.y << endl;
+        if (isValidBoxmove(newppos,vecteur)) { 
+        cout <<"valide !" << endl;
+            playerBoxmove(newppos,vecteur); 
+            }
+       }
+    }
+  }
+}
+}
+
 void Board::playerBoxmove(Point newppos, Point vecteur){
   playermove(newppos); //pass
   Point boxDest = {newppos.x + vecteur.x , newppos.y + vecteur.y};
-  cells[boxDest.x][boxDest.y].setType(BOX);
+  cells[boxDest.x][boxDest.y].setType(BOX);  
 }
+
+
+void Board::playermove(Point newppos) { //! param = nouvelle position (plus un vecteur)
+  Point playerCellPos = playerCell->getPosition(); //TODO est répété dans move (mauvaise pratique)
+  if (playerCell->isObjective) {
+    playerCell->setType(OBJECTIVE);
+  }else if (playerCell->isPortal()) {
+    playerCell->setType(PORTAL);
+  } else {playerCell->setType(PATH);}
+
+  cells[newppos.x][newppos.y].setType(PLAYER);
+
+  cout << "old : " << playerCellPos.x << ' ' << playerCellPos.y << endl;
+  cout << "new : " << newppos.x << ' ' << newppos.y << endl;
+  steps++;
+  updateCellNeighbors(playerCell); //TODO regulièrement check if it's updating the right cell
+  
+  playerCell = &cells[newppos.x][newppos.y]; //TODO plus propre d'en faire une méthode setter
+  //TODO                                    (pour une future classe TELEPORT qui manipulera aussi playerCell)
+   // only error checking below (à ne pas changer car very useful)
+  for (int i = 0; i < playerCell->getNeighbors().size();
+       i++) {
+    Point pos =
+        playerCell->getNeighbors()[i]->getPosition();
+    cout << "positions dispo :" << pos.x << ' ' << pos.y
+         << endl; // working good
+         }
+}
+
 
 bool Board::isValidBoxmove(Point newppos, Point vecteur){
   Point boxDest = {newppos.x + vecteur.x, newppos.y + vecteur.y};
@@ -102,14 +165,15 @@ void Board::initialize() {
 
   // cells initiation
   for (unsigned short x = 0; x < board.size(); x++) {
+    cout << "board size :" << board.size() << endl;
     cout << "cells size in prog.: " << cells.size() << endl;
     cells.push_back({});
     for (int y = 0; y < board.size(); y++) {
       cells[x].push_back({{50 * x + 25, 50 * y + 25}, 40, 40});
       cout << "working..." << x << ' ' << y << endl;
       cells[x][y].setPosition(
-          {static_cast<int>(x), static_cast<int>(y)}); // coord matrice jamais -
-      switch (board[y][x]) { //! PROBLEME : EST A L'ENVERS SI ON INVERSE X ET Y
+          {static_cast<int>(x), static_cast<int>(y)}); 
+      switch (board[y][x]) { 
       case PATH:
         cells[x][y].setType(PATH);
         break;
@@ -130,6 +194,12 @@ void Board::initialize() {
         cells[x][y].setType(OBJECTIVE);
         cells[x][y].isObjective = True;
         break;
+      case PORTAL:
+        cells[x][y].setType(PORTAL);
+        cells[x][y].setPortal(true);
+        cells[x][y].setPortalID(1);
+        //cells[x][y].setColor( portalColors[((stoi(elem)/10) +  (stoi(elem)-(stoi(elem)/10) *10 ) )-3]) ;
+
       }
     }
   }
@@ -159,9 +229,9 @@ void Board::draw() { //TODO peut etre mettre displayboard dedans <<<
         c.draw();
       }
    }
-      Text textSteps{"Nombre de pas :" + to_string(steps), {100, 200}, 20, FL_GRAY0};
-      Text textHighScore{"Meilleur score :" + to_string(gamesHighScore), {100, 220}, 20, FL_GRAY0};
-      Text textStepsLimit{"Limite de pas :" + to_string(stepsLimit), {100, 240}, 20, FL_GRAY0};
+      Text textSteps{"Nombre de pas :" + to_string(steps), {100, 300}, 20, FL_GRAY0};
+      Text textHighScore{"Meilleur score :" + to_string(gamesHighScore), {100, 320}, 20, FL_GRAY0};
+      Text textStepsLimit{"Limite de pas :" + to_string(stepsLimit), {100, 340}, 20, FL_GRAY0};
       textHighScore.draw();
       textSteps.draw();
       textStepsLimit.draw();
@@ -221,36 +291,6 @@ void Board::keyPressed(
   }
   draw();
 }
-
-
-
-void Board::playermove(Point newppos) { //! param = nouvelle position (plus un vecteur)
-  Point playerCellPos = playerCell->getPosition(); //TODO est répété dans move (mauvaise pratique)
-  if (playerCell->isObjective) {
-    playerCell->setType(OBJECTIVE);
-  }
-  else {playerCell->setType(PATH);}
-
-  cells[newppos.x][newppos.y].setType(PLAYER);
-
-  cout << "old : " << playerCellPos.x << ' ' << playerCellPos.y << endl;
-  cout << "new : " << newppos.x << ' ' << newppos.y << endl;
-  steps++;
-  updateCellNeighbors(playerCell); //TODO regulièrement check if it's updating the right cell
-  
-  playerCell = &cells[newppos.x][newppos.y]; //TODO plus propre d'en faire une méthode setter
-  //TODO                                    (pour une future classe TELEPORT qui manipulera aussi playerCell)
-   // only error checking below (à ne pas changer car very useful)
-  for (int i = 0; i < playerCell->getNeighbors().size();
-       i++) {
-    Point pos =
-        playerCell->getNeighbors()[i]->getPosition();
-    cout << "positions dispo :" << pos.x << ' ' << pos.y
-         << endl; // working good
-         }
-  
-}
-
 
 
 bool Board::isInBoard(Point newppos){
@@ -325,5 +365,22 @@ void Board::setHighscore(unsigned int newHighscore) {
       gamesHighScore = newHighscore;
     cout << "newhighscore!!!" << newHighscore << endl;
   }
+}
+
+// Portal part
+bool Board::matchPortals(Cell c1, Cell c2) {
+  return (c2.getPortalID() ==((c1.getPortalID() - ((c1.getPortalID() / 10) * 10)) * 10) + c1.getPortalID() / 10);
+}
+
+void Board::PortalTravel(Point portal) {
+  for (auto &v : cells)
+    for (auto &c : v) {
+      if (c.getType() == PORTAL &&
+          matchPortals(cells[portal.x][portal.y], c)) {
+          playermove(c.getPosition());
+          cout << "portal work" <<endl;
+        break;
+      }
+    }
 }
 

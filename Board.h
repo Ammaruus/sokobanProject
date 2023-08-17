@@ -4,6 +4,7 @@
 #include "Point.h"
 #include "Cell.h"
 #include "text.h"
+#include "Constant.h"
 
 /*--------------------------------------------------
 
@@ -30,21 +31,29 @@ class Board {
   vector<Cell *> neighbors(int x, int y); 
   Text textYouWin{"Gagné", {190, 150}, 90, fl_rgb_color(0, 255, 0)};
   Text textYouLose{"Perdu", {190, 150}, 90, fl_rgb_color(255, 0, 0)};
-  Text intro {"Sokoban, created by Amine et Ammar", {210, 150}, 20, fl_rgb_color(0,0,0)}; 
+  Text intro {"Sokoban, crée par Amine et Ammar", {210, 150}, 20, fl_rgb_color(0,0,0)}; 
   unsigned int counter = 0;
   unsigned int gamesHighScore = 0;
   unsigned int steps = 0;
-  unsigned int stepsLimit = 10;
+
+  vector<unsigned int> portalColors{fl_rgb_color(127,0,255), fl_rgb_color(128,255,0),
+                                         fl_rgb_color(FL_RED),fl_rgb_color(0,0,255),
+                                         fl_rgb_color(255,255,0),fl_rgb_color(FL_GRAY0),
+                                      fl_rgb_color(0,255,255),fl_rgb_color(255,128,0),
+                                      fl_rgb_color(FL_GREEN),
+    };
 
   Cell* playerCell;
 
-  void initialize();
 
+  void initialize();
+  
 
 public:
   Board() { initialize();}
   
   void draw();
+  //void std::vector<std::vector<int>> initializeMatrixFromFile(const std::string &filename);
 
   void mouseMove(Point mouseLoc);
   void mouseClick(Point mouseLoc);
@@ -70,6 +79,10 @@ public:
   void setHighscore(unsigned int newHighscore);
   
   bool isStepsLimitPassed() const;
+
+  void PortalTravel(Point Portal);
+  static bool matchPortals(Cell c1, Cell c2);
+
 };
 
 #endif //__BOARD_H

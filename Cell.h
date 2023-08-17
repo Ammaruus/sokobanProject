@@ -12,7 +12,7 @@
 Cell class.
 
 The Board class below will have cells as instance
-vraiables and call the methods of Cell
+vrariables and call the methods of Cell
 --------------------------------------------------*/
 
 class Cell {
@@ -20,7 +20,8 @@ class Cell {
   Rectangle r;
   Point position;
   vector<Cell *> neighbors;
-  
+  bool portal = false;
+  int portalId = -1;
   int type;
 
 public:
@@ -45,6 +46,10 @@ public:
   }
   void setType(int newType) { type = newType; }
   int getType() { return type; }
+  void setPortal(bool newSet){ portal = newSet;}
+  bool isPortal() {return portal;}
+  void setPortalID(int newPortalId){portalId = newPortalId;}
+  int getPortalID(){return portalId;}
 
 };
 

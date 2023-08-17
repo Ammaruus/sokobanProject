@@ -19,8 +19,19 @@ void Cell::draw() {
     r.draw();
     break;
 
+  case PORTAL:
+
+    r.setFillColor(fl_rgb_color(0,204,0));
+    r.setFrameColor(FL_WHITE);
+    r.draw();
+    r.drawstripes();
+
   case PLAYER:
+  if (isPortal()){
+    r.setFillColor(fl_rgb_color(0,204,0));
+  }else {
     r.setFillColor(FL_DARK_YELLOW);
+  }
     r.draw();
     break;
   case OBJECTIVE:
