@@ -25,6 +25,9 @@ keyPressed chaque fois qu’une touche est pressée
 
 class Board {
 
+  vector<vector<int>> board ;
+  vector<vector<int>> initializeMatrixFromFile(const string &filename);// permet de lire un fichier et le transformer en matrice d'entier.
+
   vector<vector<Cell>> cells; // representer notre map, une matrice de cellule
   vector<Cell *> neighbors(int x, int y); // stocke tous les voisins d'une cellule
   Text textWin{"Gagné", {190, 150}, 90, fl_rgb_color(0, 255, 0)};
@@ -48,8 +51,7 @@ class Board {
   
 
 public:
-  Board() { initialize();}
-  vector<vector<int>> initializeMatrixFromFile(const string &filename);// permet de lire un fichier et le transformer en matrice d'entier
+  Board(const string &filename){board = initializeMatrixFromFile(filename); initialize();};
   
   void draw();
 

@@ -18,7 +18,7 @@
 
 using namespace std;
 
-vector<vector<int>> initializeMatrixFromFile(const string &filename) {
+vector<vector<int>> Board::initializeMatrixFromFile(const string &filename) {
     ifstream inputFile(filename);
 
     if (!inputFile.is_open()) {
@@ -44,7 +44,6 @@ vector<vector<int>> initializeMatrixFromFile(const string &filename) {
     return matrix;
 }
 
-vector<vector<int>> board = initializeMatrixFromFile("map1.txt");
 
 bool Board::gameEnd(){
   for (auto &v : cells)

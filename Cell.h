@@ -18,6 +18,8 @@ class Cell {
   Rectangle r;
   Point position;
   vector<Cell *> neighbors;
+  bool portal = false;
+  int portalId = -1;
   int type; // permet de differencier le type des celle
 
 public:
