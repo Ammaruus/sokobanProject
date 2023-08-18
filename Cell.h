@@ -9,48 +9,44 @@
 #include <vector>
 /*--------------------------------------------------
 
-Cell class.
+Classe Cell
 
-The Board class below will have cells as instance
-vrariables and call the methods of Cell
+represente une cellule sur la map dessinée a l'ecran
 --------------------------------------------------*/
 
 class Cell {
- // TODO supprimer si pas de classe héritée + tard
   Rectangle r;
   Point position;
   vector<Cell *> neighbors;
   bool portal = false;
   int portalId = -1;
-  int type;
+  int type; // permet de differencier le type des celle
 
 public:
   // Constructor
   Cell(Point center, int w, int h);
 
-  // Methods that draw and handle events
+  // Methode qui dessine et s'occupe des mouvement
   void draw();
   void mouseMove(Point mouseLoc);
   void mouseClick(Point mouseLoc);
 
-  // Used to initalize neighbors after all cells are created
+  // Getter et setter pour la position d'une case
   void setPosition(Point newPosition) { position = newPosition; }
   Point getPosition() { return position; }
-  bool isObjective = False; //TODO mettre en attribut ( dans protected ) et faire getter/setter
-  void setNeighbors(const vector<Cell *> newNeighbors) {
-    neighbors = newNeighbors;
+  bool isObjective = False; 
+  //permet d'initiliser les voisin d'une celulle apres la creation de cell-ci
+  void setneighbors(const vector<Cell *> newneighbors) {
+    neighbors = newneighbors;
   }
-  const vector<Cell *> getNeighbors() { //permet d'accéder aux voisins de chaque cell (à appeler QUE après
-  //                                      que Board::initialize() soit exécuté)
+  //permet d'accéder aux voisins de chaque cellule
+  const vector<Cell *> getneighbors() { 
     return neighbors;
   }
+  // guetter et setter pour definir le type d'une celulle(joueur, mur, boite, cible, portal)
   void setType(int newType) { type = newType; }
   int getType() { return type; }
-  void setPortal(bool newSet){ portal = newSet;}
-  bool isPortal() {return portal;}
-  void setPortalID(int newPortalId){portalId = newPortalId;}
-  int getPortalID(){return portalId;}
-
+  
 };
 
 #endif //__CELL_H

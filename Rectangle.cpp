@@ -24,11 +24,3 @@ bool Rectangle::contains(Point p) {
   return p.x >= center.x - w / 2 && p.x < center.x + w / 2 &&
          p.y >= center.y - h / 2 && p.y < center.y + h / 2;
 }
-
-void Rectangle::drawstripes(){
-  for (unsigned int i = 0 ; i < 5 ; i++){
-    fl_line_style(FL_DOT, 3);
-    fl_line(stripeInitPos[i].x,stripeInitPos[i].y,stripeFinalPos[i].x,stripeFinalPos[i].y);
-    fl_line_style(0);
-  }
-}

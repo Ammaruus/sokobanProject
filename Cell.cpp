@@ -1,6 +1,12 @@
 #include "Cell.h"
 
-Cell::Cell(Point center, int w, int h) : r(center, w, h, FL_BLACK, FL_WHITE) {} //? à déterminer
+Cell::Cell(Point center, int w, int h) : r(center, w, h, FL_BLACK, FL_WHITE) {} 
+
+/*-------------------------------
+La methode draw de Cell permet de dessiner tous les objet selon leur type,
+on a utilisé un switch pour mieux differencier les differents element (joueur, mur, case, objectif, portal)
+
+-----------------------------------*/
 
 void Cell::draw() {
   switch (type) {
@@ -19,19 +25,8 @@ void Cell::draw() {
     r.draw();
     break;
 
-  case PORTAL:
-
-    r.setFillColor(fl_rgb_color(0,204,0));
-    r.setFrameColor(FL_WHITE);
-    r.draw();
-    r.drawstripes();
-
   case PLAYER:
-  if (isPortal()){
-    r.setFillColor(fl_rgb_color(0,204,0));
-  }else {
     r.setFillColor(FL_DARK_YELLOW);
-  }
     r.draw();
     break;
   case OBJECTIVE:

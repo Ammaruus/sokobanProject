@@ -1,6 +1,6 @@
 
 LDFLAGS +=-lfltk
-ALL_FILES= main.cpp Board.cpp Cell.cpp Rectangle.cpp text.cpp
+ALL_FILES= main.cpp Board.cpp Cell.cpp Rectangle.cpp Text.cpp
 CXXFLAGS += $(shell fltk-config --cxxflags)
 LDFLAGS  += $(shell fltk-config --ldflags)
 CXXFLAGS += --std='c++17' -Wall -Wextra -pedantic

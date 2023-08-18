@@ -7,6 +7,13 @@
 #include <vector>
 using namespace std;
 
+/*--------------------------------------------------
+Structure Point
+
+Permets d'initialiser un point qui servira pour le different dessin de rectangle ainsi
+que le mouvement du joueur et des boîtes.
+--------------------------------------------------*/
+
 struct Point {
   int x;
   int y;

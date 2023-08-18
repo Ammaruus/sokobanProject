@@ -3,83 +3,88 @@
 
 #include "Point.h"
 #include "Cell.h"
-#include "text.h"
+#include "Text.h"
 #include "Constant.h"
 
 /*--------------------------------------------------
 
-Board class.
+Classe Board
 
-One instance of the board class is made by the
-MainWindow class.
 
-The fltk system via MainWindow calls:
+Une instance de la classe de conseil est faite par la
+classe MainWindow dans le fichier main.cpp
 
-draw 60 times a second
-mouseMove whenever the mouse is moved
-mouseClick whenever the mouse is clicked
-keyPressed whenever a key is pressed
+Le système fltk via les appels MainWindow:
 
-Any drawing code should be called ONLY in draw
-or methods called by draw. If you try to draw
-elsewhere it will probably crash.
+draw 60 fois par seconde
+mouseMove  chaque fois que la souris est déplacée
+mouseClick chaque fois que la souris est cliquée
+keyPressed chaque fois qu’une touche est pressée
+
 --------------------------------------------------*/
 
 class Board {
 
-  vector<vector<Cell>> cells;
-  vector<Cell *> neighbors(int x, int y); 
-  Text textYouWin{"Gagné", {190, 150}, 90, fl_rgb_color(0, 255, 0)};
-  Text textYouLose{"Perdu", {190, 150}, 90, fl_rgb_color(255, 0, 0)};
-  Text intro {"Sokoban, crée par Amine et Ammar", {210, 150}, 20, fl_rgb_color(0,0,0)}; 
-  unsigned int counter = 0;
-  unsigned int gamesHighScore = 0;
-  unsigned int steps = 0;
+  vector<vector<Cell>> cells; // representer notre map, une matrice de cellule
+  vector<Cell *> neighbors(int x, int y); // stocke tous les voisins d'une cellule
+  Text textWin{"Gagné", {190, 150}, 90, fl_rgb_color(0, 255, 0)};
+  Text textLose{"Perdu", {190, 150}, 90, fl_rgb_color(255, 0, 0)};
+  Text introduction {"Sokoban, crée par Amine et Ammar", {210, 150}, 20, fl_rgb_color(0,0,0)}; 
+  Text howToPlay1 {"Fleche pour bouger le personnage", {250, 20}, 15, fl_rgb_color(0,0,0)};
+  Text howToPlay2 {"   restart : Espace", {250, 80}, 15, fl_rgb_color(0,0,0)};
+  Text howToPlay3 {" quitter : q ", {250, 100}, 15, fl_rgb_color(0,0,0)};
 
-  vector<unsigned int> portalColors{fl_rgb_color(127,0,255), fl_rgb_color(128,255,0),
-                                         fl_rgb_color(FL_RED),fl_rgb_color(0,0,255),
-                                         fl_rgb_color(255,255,0),fl_rgb_color(FL_GRAY0),
-                                      fl_rgb_color(0,255,255),fl_rgb_color(255,128,0),
-                                      fl_rgb_color(FL_GREEN),
-    };
+  unsigned int counter = 0; 
+  unsigned int gamesHighScore = 0; // enregistre le meilleur score de la partie
+  unsigned int steps = 0; // compteurde pas d'un joueur
 
-  Cell* playerCell;
+
+  Cell* playerCell; // case du joueur
 
 
   void initialize();
+
+
   
 
 public:
   Board() { initialize();}
+  vector<vector<int>> initializeMatrixFromFile(const string &filename);// permet de lire un fichier et le transformer en matrice d'entier
   
   void draw();
-  //void std::vector<std::vector<int>> initializeMatrixFromFile(const std::string &filename);
+
 
   void mouseMove(Point mouseLoc);
   void mouseClick(Point mouseLoc);
   void keyPressed(int keyCode);
-  void updateAllNeighbors();
-  void updateCellNeighbors(Cell* cell);
-  bool areNeighbors(Cell* c1, Cell* c2);
+  // methode pour gerer les voisins d'une cellule
+  void updateAllneighbors();
+  void updateCellneighbors(Cell* cell);
+  bool areneighbors(Cell* c1, Cell* c2);
   
-  bool isInBoard(Point newppos);
-  void displayintro();
+  // methode qui verifie si un point est a l'interieur de la classe Board
+  // utiliser pour verifier dans le move si la nouvelle position est bien dans le board
+  bool pointInBoard(Point newppos);
 
-  bool isvalidplayermove(Point destination);
-  void playermove(Point destination);
-
+  // methodes qui gere le deplacement d'un joueur ainsi que sa validité
+  bool validplayerMove(Point destination);
+  void playerMove(Point destination);
   void move(Point vecteur);
 
-  bool isGameOver(); 
+  // methodes qui gere le deplacement de la boite ainsi que sa validité
   bool isValidBoxmove(Point newppos, Point vecteur);
   void playerBoxmove(Point newppos, Point vecteur);
 
+  bool gameEnd(); 
+  
+  // Partie Score
   void initHighscore();
   void resetHighscore();
   void setHighscore(unsigned int newHighscore);
   
-  bool isStepsLimitPassed() const;
+  bool stepsLimitPassed() const;
 
+  // Partie Portal
   void PortalTravel(Point Portal);
   static bool matchPortals(Cell c1, Cell c2);
 

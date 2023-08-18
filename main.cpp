@@ -27,7 +27,7 @@ Do not edit!!!!
 --------------------------------------------------*/
 
 class MainWindow : public Fl_Window {
-  Board board;
+  Board board; ///instancier un objet board
   
 public:
 
